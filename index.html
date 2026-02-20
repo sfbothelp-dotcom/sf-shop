@@ -6,69 +6,20 @@
     <title>Mango Market App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg: #0d0216;
-            --accent: #ff003c;
-            --violet: #7000ff;
-            --card-bg: rgba(255, 255, 255, 0.07);
-        }
-        body {
-            background: var(--bg);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            margin: 0; padding: 0;
-            background: radial-gradient(circle at top right, #300030, #0d0216);
-            min-height: 100vh;
-        }
-        .app-container { padding: 20px; padding-bottom: 80px; }
-        
-        .card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 0, 60, 0.3);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-            transition: 0.3s;
-        }
-        .card:hover { border-color: var(--accent); transform: scale(1.02); }
-        
-        h1, h2 { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
-
-        .btn {
-            background: linear-gradient(45deg, var(--accent), var(--violet));
-            border: none; color: white; padding: 12px;
-            border-radius: 12px; width: 100%; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 0, 60, 0.4);
-            margin: 5px 0;
-        }
-
-        .nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: rgba(13, 2, 22, 0.9);
-            display: flex; justify-content: space-around;
-            padding: 15px 0; border-top: 1px solid var(--violet);
-            z-index: 1000;
-        }
-        .nav-item { opacity: 0.5; transition: 0.3s; cursor: pointer; font-size: 14px; }
+        :root { --bg: #0d0216; --accent: #ff003c; --violet: #7000ff; --card-bg: rgba(255, 255, 255, 0.07); }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: radial-gradient(circle at top right, #300030, #0d0216); min-height: 100vh; overflow-x: hidden; }
+        .app-container { padding: 20px; padding-bottom: 100px; }
+        .card { background: var(--card-bg); border: 1px solid rgba(255, 0, 60, 0.3); border-radius: 18px; padding: 15px; margin-bottom: 15px; backdrop-filter: blur(10px); }
+        h2 { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
+        .btn { background: linear-gradient(45deg, var(--accent), var(--violet)); border: none; color: white; padding: 12px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: rgba(13, 2, 22, 0.9); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--violet); z-index: 1000; }
+        .nav-item { opacity: 0.5; cursor: pointer; font-size: 14px; transition: 0.3s; }
         .nav-item.active { opacity: 1; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-
-        .wheel-box { text-align: center; margin-top: 20px; }
-        .wheel {
-            width: 220px; height: 220px; border-radius: 50%;
-            border: 5px solid var(--accent); margin: 0 auto;
-            background: conic-gradient(from 0deg, #ff003c, #7000ff, #ff003c, #7000ff);
-            transition: 4s cubic-bezier(0.1, 0, 0, 1);
-            box-shadow: 0 0 30px var(--violet);
-        }
-
         .hidden { display: none; }
-        input {
-            width: 90%; padding: 10px; margin: 10px 0;
-            background: rgba(0,0,0,0.5); border: 1px solid var(--violet);
-            border-radius: 8px; color: white;
-        }
-        .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--violet); border-radius: 8px; color: white; }
+        .wheel-box { text-align: center; }
+        .wheel { width: 220px; height: 220px; border-radius: 50%; border: 5px solid var(--accent); margin: 0 auto; background: conic-gradient(#ff003c, #7000ff, #ff003c, #7000ff); transition: 4s cubic-bezier(0.1, 0, 0, 1); box-shadow: 0 0 20px var(--violet); }
     </style>
 </head>
 <body>
@@ -76,15 +27,31 @@
 <div class="app-container">
     <div id="market-page">
         <h2 data-key="market_title">🛍 Market</h2>
-        <div class="card">
-            <h3>Telegram Stars ⭐</h3>
-            <p data-key="stars_desc">Швидке нарахування через вхід</p>
-            <button class="btn" onclick="buy('Stars')" data-key="buy_btn">Купити</button>
+        
+        <div class="pack-grid" id="cat-select">
+            <button class="btn" onclick="openSub('stars-menu')">⭐ Stars</button>
+            <button class="btn" onclick="openSub('prem-menu')">💎 Premium</button>
         </div>
-        <div class="card">
-            <h3>Premium 💎</h3>
-            <p data-key="prem_desc">Гіфтом або через логін</p>
-            <button class="btn" onclick="buy('Premium')" data-key="buy_btn">Купити</button>
+
+        <div id="stars-menu" class="hidden">
+            <button class="btn" style="background:none; border:1px solid grey;" onclick="openSub('cat-select')">← Назад</button>
+            <div class="pack-grid" style="margin-top:10px;">
+                <div class="card"><h3>100 ⭐</h3><p>110₴</p><button class="btn" onclick="buy('100 Stars')">Купити</button></div>
+                <div class="card"><h3>250 ⭐</h3><p>260₴</p><button class="btn" onclick="buy('250 Stars')">Купити</button></div>
+                <div class="card"><h3>500 ⭐</h3><p>510₴</p><button class="btn" onclick="buy('500 Stars')">Купити</button></div>
+                <div class="card"><h3>1000 ⭐</h3><p>980₴</p><button class="btn" onclick="buy('1000 Stars')">Купити</button></div>
+                <div class="card"><h3>5000 ⭐</h3><p>4700₴</p><button class="btn" onclick="buy('5000 Stars')">Купити</button></div>
+                <div class="card"><h3>10к ⭐</h3><p>9200₴</p><button class="btn" onclick="buy('10000 Stars')">Купити</button></div>
+            </div>
+        </div>
+
+        <div id="prem-menu" class="hidden">
+            <button class="btn" style="background:none; border:1px solid grey;" onclick="openSub('cat-select')">← Назад</button>
+            <div class="card" style="margin-top:10px;">
+                <h3>Telegram Premium</h3>
+                <button class="btn" onclick="buy('Prem Login')">🔐 Через вхід (дешевше)</button>
+                <button class="btn" style="margin-top:10px;" onclick="buy('Prem Gift')">🎁 Подарунком (Gift)</button>
+            </div>
         </div>
     </div>
 
@@ -92,32 +59,26 @@
         <h2 data-key="wheel_title">🎡 Fortune Wheel</h2>
         <div class="wheel-box">
             <div class="wheel" id="wheel"></div>
-            <p style="margin-top: 20px;"><span data-key="cost_text">Вартість</span>: 50₴</p>
+            <p style="margin-top:20px;"><span data-key="cost_text">Вартість</span>: 50₴</p>
             <button class="btn" onclick="spin()" data-key="spin_btn">Крутити 🔥</button>
         </div>
     </div>
 
     <div id="profile-page" class="hidden">
         <h2 data-key="profile_title">👤 Profile</h2>
-        
         <div class="card">
-            <h3 data-key="lang_btn">Змінити мову</h3>
-            <div class="lang-grid">
-                <button class="btn" onclick="setLanguage('uk')">🇺🇦 UA</button>
-                <button class="btn" onclick="setLanguage('ru')">🇷🇺 RU</button>
-                <button class="btn" onclick="setLanguage('en')">🇺🇸 EN</button>
-            </div>
+            <input type="email" id="reg-email" placeholder="Email для реєстрації">
+            <button class="btn" onclick="regMail()">Зареєструвати пошту</button>
         </div>
-
         <div class="card">
             <p>Email: <span id="user-email">не вказано</span></p>
-            <p><span data-key="balance">Баланс</span>: <b id="balance">0.00</b> ₴</p>
+            <p><span data-key="balance">Баланс</span>: <b id="balance">0.00</b> TON</p>
         </div>
-        
         <div class="card">
-            <input type="number" id="topup-amount" placeholder="Сума (₴)">
-            <button class="btn" onclick="generatePayment()" data-key="topup">Поповнити через TON</button>
-            <p id="payment-info" style="font-size: 12px; margin-top: 10px; color: #aaa;"></p>
+            <p style="color:#ffcc00; font-size:12px;">⚠️ Якщо не покрити комісію мережі, платіж не буде зараховано!</p>
+            <input type="number" id="topup-ton" placeholder="Сума в TON">
+            <button class="btn" onclick="payTon()" data-key="topup">Поповнити TON</button>
+            <p id="payment-id-display" style="font-size: 14px; margin-top: 10px; color: #ff003c; font-weight:bold;"></p>
         </div>
     </div>
 </div>
@@ -132,67 +93,6 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    const translations = {
-        uk: {
-            market_title: "🛍 Маркет",
-            wheel_title: "🎡 Удачу",
-            profile_title: "👤 Профіль",
-            buy_btn: "Купити",
-            topup: "Поповнити через TON",
-            lang_btn: "Змінити мову",
-            balance: "Баланс",
-            stars_desc: "Швидке нарахування через вхід",
-            prem_desc: "Гіфтом або через логін",
-            cost_text: "Вартість",
-            spin_btn: "Крутити 🔥",
-            nav_m: "Магазин",
-            nav_w: "🎡 Удачу",
-            nav_p: "Профіль"
-        },
-        ru: {
-            market_title: "🛍 Маркет",
-            wheel_title: "🎡 Удача",
-            profile_title: "👤 Профиль",
-            buy_btn: "Купить",
-            topup: "Пополнить через TON",
-            lang_btn: "Сменить язык",
-            balance: "Баланс",
-            stars_desc: "Быстрое начисление через вход",
-            prem_desc: "Гифтом или через логин",
-            cost_text: "Стоимость",
-            spin_btn: "Крутить 🔥",
-            nav_m: "Магазин",
-            nav_w: "🎡 Удача",
-            nav_p: "Профиль"
-        },
-        en: {
-            market_title: "🛍 Market",
-            wheel_title: "🎡 Luck",
-            profile_title: "👤 Profile",
-            buy_btn: "Buy",
-            topup: "Top up via TON",
-            lang_btn: "Change Language",
-            balance: "Balance",
-            stars_desc: "Fast delivery via login",
-            prem_desc: "Gift or login access",
-            cost_text: "Cost",
-            spin_btn: "Spin 🔥",
-            nav_m: "Market",
-            nav_w: "🎡 Luck",
-            nav_p: "Profile"
-        }
-    };
-
-    function setLanguage(lang) {
-        document.querySelectorAll('[data-key]').forEach(el => {
-            const key = el.getAttribute('data-key');
-            if (translations[lang][key]) el.innerText = translations[lang][key];
-        });
-        document.getElementById('nav-market').innerText = translations[lang].nav_m;
-        document.getElementById('nav-wheel').innerText = translations[lang].nav_w;
-        document.getElementById('nav-profile').innerText = translations[lang].nav_p;
-    }
-
     function showPage(page, el) {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
@@ -202,26 +102,49 @@
         document.getElementById(page + '-page').classList.remove('hidden');
     }
 
-    function generatePayment() {
-        let amount = document.getElementById('topup-amount').value;
-        if(!amount) return alert("Введіть суму / Введите сумму");
+    function openSub(id) {
+        document.getElementById('cat-select').classList.add('hidden');
+        document.getElementById('stars-menu').classList.add('hidden');
+        document.getElementById('prem-menu').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function buy(item) {
+        tg.sendData(JSON.stringify({action: "buy_request", item: item}));
+    }
+
+    function regMail() {
+        let email = document.getElementById('reg-email').value;
+        if(!email.includes('@')) return alert("Невірний email");
+        tg.sendData(JSON.stringify({action: "reg_email", email: email}));
+    }
+
+    function payTon() {
+        let amount = document.getElementById('topup-ton').value;
+        if(!amount || amount <= 0) return alert("Введіть суму TON");
         let payId = Math.floor(1000 + Math.random() * 9000);
         let wallet = "UQCeajMf5dLZba5lM1Fs8RsPSG26PoomRxINUTnKzJZhLTKg";
         let link = `ton://transfer/${wallet}?amount=${amount * 1000000000}&text=${payId}`;
-        document.getElementById('payment-info').innerHTML = `ID: <b>${payId}</b><br>Вкажіть цей ID в коментарі!`;
+        document.getElementById('payment-id-display').innerHTML = `ВАШ ID: ${payId} (ВКАЖІТЬ В КОМЕНТАР)`;
         window.open(link, '_blank');
         tg.sendData(JSON.stringify({action: "payment_start", id: payId, sum: amount}));
     }
 
     function spin() {
         let w = document.getElementById('wheel');
-        let deg = Math.floor(3000 + Math.random() * 3000);
+        let deg = Math.floor(3000 + Math.random() * 5000);
         w.style.transform = `rotate(${deg}deg)`;
-        setTimeout(() => alert("Результат зафіксовано!"), 4100);
+        
+        setTimeout(() => {
+            let rnd = Math.random() * 100;
+            let result = "Нічого";
+            if (rnd < 15) result = "100 Stars";
+            else if (rnd < 25) result = "150 Stars";
+            
+            alert("Результат: " + result);
+            tg.sendData(JSON.stringify({action: "wheel_result", win: result}));
+        }, 4100);
     }
-    
-    // Инициализация украинского по умолчанию
-    setLanguage('uk');
 </script>
 </body>
 </html>
